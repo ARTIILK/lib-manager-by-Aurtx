@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import time
 
 # Base URL from frontend env
-BASE_URL = "/api"  # This will be mapped to the correct external URL
+BASE_URL = "https://85959c47-17a3-48f6-99ae-9ff711e8710f.preview.emergentagent.com/api"
 
 class BiblioFlowTester:
     def __init__(self):
