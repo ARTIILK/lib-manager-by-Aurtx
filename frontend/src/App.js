@@ -229,7 +229,15 @@ function StudentsTab() {
   const [form, setForm] = useState({ name: '', admission_number: '', class_name: '' }); const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('');
 
-  const load = async () => setItems(await api(`/students?q=${encodeURIComponent(q)}`));
+  const load = async () => {
+    try {
+      const result = await api(`/students?q=${encodeURIComponent(q)}`);
+      setItems(result || []);
+    } catch (e) {
+      setItems([]);
+      setStatus(e.message);
+    }
+  };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
   const create = async () => {
