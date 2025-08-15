@@ -55,6 +55,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "Borrow/Return flow working perfectly: Books marked unavailable on borrow, active borrows tracked correctly, return functionality working, warnings system functional, proper error handling for unavailable books and non-borrowed returns."
+      - working: true
+        agent: "testing"
+        comment: "Focused re-test: Borrow/Return flow verified working correctly - successful borrow (200), proper return (200), book marked as returned. Complete flow functional."
 
   - task: "MongoDB connection and indexes"
     implemented: true
