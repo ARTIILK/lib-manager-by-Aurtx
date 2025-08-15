@@ -72,9 +72,11 @@ class BiblioFlowTester:
         self.log("Testing Students CRUD...")
         
         # Test CREATE student
+        import time
+        timestamp = str(int(time.time()))
         student_data = {
-            "name": "Alice Johnson",
-            "admission_number": "STU2024001",
+            "name": f"Alice Johnson {timestamp}",
+            "admission_number": f"STU2024{timestamp}",
             "class_name": "Grade 10A"
         }
         
