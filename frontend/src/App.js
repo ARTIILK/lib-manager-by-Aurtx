@@ -164,7 +164,15 @@ function BooksTab() {
   const [form, setForm] = useState({ title: '', author: '', sbin: '', stamp: '' });
   const [status, setStatus] = useState('');
 
-  const load = async () => setItems(await api(`/books?q=${encodeURIComponent(q)}`));
+  const load = async () => {
+    try {
+      const result = await api(`/books?q=${encodeURIComponent(q)}`);
+      setItems(result || []);
+    } catch (e) {
+      setItems([]);
+      setStatus(e.message);
+    }
+  };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
   const create = async () => {
