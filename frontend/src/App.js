@@ -212,6 +212,17 @@ function StudentsTab() {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
   const create = async () => {
+    // Frontend validation: admission_number exactly 6 chars
+    const errs = {};
+    if (!form.admission_number || form.admission_number.length !== 6) {
+      errs.admission_number = 'Admission number must be exactly 6 characters';
+    }
+    if (!form.name) {
+      errs.name = 'Name is required';
+    }
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     try {
       await api('/students', { method: 'POST', body: JSON.stringify(form) });
       setForm({ name: '', admission_number: '', class_name: '' });
