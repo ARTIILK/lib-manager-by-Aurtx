@@ -1,57 +1,45 @@
-Aurtx BiblioFlow
-Aurtx BiblioFlow is a cross-platform Python GUI application built with Tkinter for managing a school library's book lending system. It provides an intuitive interface for borrowing and returning books, managing book inventory, and tracking student records. The application is designed to run seamlessly on both Windows and Linux without modification.
-Features
+BiblioFlow Web (FastAPI + React + Mongo/SQLite) with Optional Flask Local Backend
 
-Borrow Book: Search students and books with real-time suggestions using admission numbers or book codes (SBIN or Stamp). Supports student registration and automatic warning system for overdue books (>7 days).
-Return Book: Search and return books by code, updating availability and tracking late returns with automated warning updates.
-Manage Books: Add, edit, or delete books with validation for duplicate SBIN or Stamp codes.
-Manage Students: Add, edit, or delete student records, including warning counts for overdue returns.
-Database: Uses SQLite with separate databases (students.db and library.db) for robust data management.
-Theming: Consistent UI with a light teal background (#EDF7F6), dark blue-grey elements (#2E4756), and hover effects (#3A5A6B) using Segoe UI font.
-Security: Employs parameterized SQL queries to prevent SQL injection.
-Portability: Uses relative paths for cross-platform compatibility and graceful error handling for invalid inputs.
+Overview
+- Frontend: React + Tailwind (light teal #EDF7F6, dark blue-grey #2E4756, hover #3A5A6B, Segoe UI/Arial fallback)
+- Backend (cloud): FastAPI with repository abstraction supporting MongoDB (default in cloud) or SQLite (local if MONGO_URL is absent)
+- Optional Backend (local): Flask + SQLite in backend_flask/ with identical /api endpoints for offline simplicity
 
-Tech Stack
+Live Preview
+- URL: [Preview Link] (cloud uses FastAPI + MongoDB)
 
-Language: Python 3.x
-GUI Framework: Tkinter (standard library)
-Database: SQLite (standard library)
-Dependencies: None (uses Python standard library)
+Run Locally (Option A – FastAPI + SQLite)
+1) cd backend
+2) Ensure MONGO_URL is NOT set in your environment
+3) pip install -r requirements.txt
+4) uvicorn server:app --host 0.0.0.0 --port 8001
+   - Creates backend/students.db and backend/library.db automatically
 
-Project Structure
-textAurtx_BiblioFlow/
-├── main.py               # Application entry point and UI setup
-├── db_utils.py           # Database initialization and utility functions
-├── borrow_page.py        # Borrow Book page logic
-├── return_page.py        # Return Book page logic
-├── manage_books.py       # Manage Books page logic
-├── manage_students.py    # Manage Students page logic
-├── students.db           # SQLite database for students (created at runtime)
-└── library.db            # SQLite database for books and borrow records (created at runtime)
-Getting Started
-Prerequisites
+Run Locally (Option B – Flask + SQLite)
+1) cd backend_flask
+2) pip install -r requirements.txt (Flask only)
+3) python app.py  (binds 0.0.0.0:8001)
+   - Creates backend_flask/app.db automatically
 
-Python 3.x installed (no external dependencies required).
+Frontend
+1) cd frontend
+2) yarn install
+3) yarn start
+- Uses frontend/.env REACT_APP_BACKEND_URL=/api
 
-Installation
+API Endpoints (same for FastAPI and Flask)
+- GET /api/health
+- Students: POST, GET, GET by id, PUT, DELETE at /api/students
+- Books: POST, GET, GET /by-code/{code}, GET by id, PUT, DELETE at /api/books
+- Borrow/Return: POST /api/borrow, POST /api/return, GET /api/borrows
+- Suggestions: GET /api/suggest/students, GET /api/suggest/books
 
-Clone the repository:
-bashgit clone https://github.com/ARTIILK/lib-manager-by-Aurtx.git
+Validation & Rules
+- admission_number must be exactly 6 characters (frontend + backend)
+- SBIN or Stamp is required to create a book
+- Cannot delete students or books with active borrows
+- Overdue (>7 days) increments student warnings on return
 
-Navigate to the project directory:
-bashcd Aurtx_BiblioFlow
-
-Run the application:
-bashpython main.py
-
-
-The application will create students.db and library.db automatically in the project directory upon first run.
-Usage
-
-Navigate between tabs to borrow/return books or manage books/students.
-Enter valid admission numbers (6 characters) and book codes for operations.
-Use the refresh button to update book and student lists.
-Errors (e.g., duplicate codes, invalid inputs) are handled with user-friendly messages.
-
-Contributing
-Contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request. Ensure code follows PEP 8 guidelines and includes appropriate error handling.
+Notes
+- Cloud preview persists data in MongoDB
+- Local runs can be SQLite without any external services

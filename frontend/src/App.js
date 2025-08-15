@@ -1,15 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './index.css';
 
-const API_BASE = (typeof window !== 'undefined' && window.REACT_APP_BACKEND_URL) || (import.meta && import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || (process && process.env && process.env.REACT_APP_BACKEND_URL) || '';
+const API_BASE = (typeof window !== 'undefined' && window.REACT_APP_BACKEND_URL) || (import.meta && import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || (typeof process !== 'undefined' && process.env && process.env.REACT_APP_BACKEND_URL) || '';
 
 async function api(path, opts) {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
-  if (!res.ok) throw new Error((await res.json()).detail || 'Request failed');
-  return res.json();
+  let data = null;
+  try { data = await res.json(); } catch (_) { /* ignore */ }
+  if (!res.ok) {
+    const msg = (data && (data.detail || data.error || data.message)) || 'Request failed';
+    throw new Error(msg);
+  }
+  return data;
 }
 
 function Section({ title, children }) {
@@ -77,7 +82,7 @@ function BorrowTab() {
     if (!chosenStudent || !chosenBook) return;
     setStatus('Processing...');
     try {
-      const res = await api('/borrow', { method: 'POST', body: JSON.stringify({ student_id: chosenStudent.id, book_code: chosenBook.sbin || chosenBook.stamp }) });
+      await api('/borrow', { method: 'POST', body: JSON.stringify({ student_id: chosenStudent.id, book_code: chosenBook.sbin || chosenBook.stamp }) });
       setStatus('Borrowed successfully');
       setChosenBook(null); setBookQ('');
     } catch (e) {
@@ -163,14 +168,14 @@ function BooksTab() {
     } catch (e) { setStatus(e.message); }
   };
 
-  const remove = async (id) => { try { await api(`/books/${id}`, { method: 'DELETE' }); await load(); } catch (e) { alert(e.message); } };
+  const remove = async (id) => { try { await api(`/books/${id}`, { method: 'DELETE' }); await load(); } catch (e) { setStatus(e.message); } };
 
   return (
     <Section title="Manage Books">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <div className="flex gap-2 mb-2">
-            <input className="input w-full" placeholder="Search books" value={q} onChange={e => setQ(e.target.value)} />
+            <input className="input w/full" placeholder="Search books" value={q} onChange={e => setQ(e.target.value)} />
             <button className="btn" onClick={load}>Search</button>
           </div>
           <div className="space-y-2 max-h-80 overflow-auto">
@@ -188,10 +193,10 @@ function BooksTab() {
         <div>
           <div className="space-y-2">
             <input className="input w-full" placeholder="Title" value={form.title} onChange={e => setForm(v => ({...v, title: e.target.value}))} />
-            <input className="input w-full" placeholder="Author" value={form.author} onChange={e => setForm(v => ({...v, author: e.target.value}))} />
+            <input className="input w/full" placeholder="Author" value={form.author} onChange={e => setForm(v => ({...v, author: e.target.value}))} />
             <div className="grid grid-cols-2 gap-2">
-              <input className="input w-full" placeholder="SBIN" value={form.sbin} onChange={e => setForm(v => ({...v, sbin: e.target.value}))} />
-              <input className="input w-full" placeholder="Stamp" value={form.stamp} onChange={e => setForm(v => ({...v, stamp: e.target.value}))} />
+              <input className="input w/full" placeholder="SBIN" value={form.sbin} onChange={e => setForm(v => ({...v, sbin: e.target.value}))} />
+              <input className="input w/full" placeholder="Stamp" value={form.stamp} onChange={e => setForm(v => ({...v, stamp: e.target.value}))} />
             </div>
             <button className="btn" onClick={create}>Add Book</button>
             <div className="text-sm">{status}</div>
@@ -231,14 +236,14 @@ function StudentsTab() {
     } catch (e) { setStatus(e.message); }
   };
 
-  const remove = async (id) => { try { await api(`/students/${id}`, { method: 'DELETE' }); await load(); } catch (e) { alert(e.message); } };
+  const remove = async (id) => { try { await api(`/students/${id}`, { method: 'DELETE' }); await load(); } catch (e) { setStatus(e.message); } };
 
   return (
     <Section title="Manage Students">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <div className="flex gap-2 mb-2">
-            <input className="input w-full" placeholder="Search students" value={q} onChange={e => setQ(e.target.value)} />
+            <input className="input w/full" placeholder="Search students" value={q} onChange={e => setQ(e.target.value)} />
             <button className="btn" onClick={load}>Search</button>
           </div>
           <div className="space-y-2 max-h-80 overflow-auto">
@@ -255,11 +260,11 @@ function StudentsTab() {
         </div>
         <div>
           <div className="space-y-2">
-            <input className="input w-full" placeholder="Name" value={form.name} onChange={e => setForm(v => ({...v, name: e.target.value}))} />
+            <input className="input w/full" placeholder="Name" value={form.name} onChange={e => setForm(v => ({...v, name: e.target.value}))} />
             {errors.name && <div className="text-sm text-red-600">{errors.name}</div>}
-            <input className="input w-full" placeholder="Admission Number (6 chars)" value={form.admission_number} onChange={e => setForm(v => ({...v, admission_number: e.target.value}))} />
+            <input className="input w/full" placeholder="Admission Number (6 chars)" value={form.admission_number} onChange={e => setForm(v => ({...v, admission_number: e.target.value}))} />
             {errors.admission_number && <div className="text-sm text-red-600">{errors.admission_number}</div>}
-            <input className="input w-full" placeholder="Class" value={form.class_name} onChange={e => setForm(v => ({...v, class_name: e.target.value}))} />
+            <input className="input w/full" placeholder="Class" value={form.class_name} onChange={e => setForm(v => ({...v, class_name: e.target.value}))} />
             <button className="btn" onClick={create}>Add Student</button>
             <div className="text-sm">{status}</div>
           </div>
