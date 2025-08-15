@@ -121,11 +121,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Parallel Flask backend (SQLite) correctness"
-    - "Frontend E2E flows"
+    - "Frontend API URL configuration fix"
+    - "Frontend JavaScript runtime errors"
   steps:
-    - "Run auto_frontend_testing_agent to: add student (6-char), add book (SBIN), borrow, verify Active Borrows, return."
-    - "Overdue warnings UI cannot be validated without time travel; recommend backend hook or manual DB tweak for that specific check."
+    - "Fix REACT_APP_BACKEND_URL configuration to prevent API call failures"
+    - "Fix JavaScript runtime errors in BorrowTab component (null map reading)"
+    - "Re-run E2E testing after fixes"
   test_all: false
   test_priority: "high_first"
 
