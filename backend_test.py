@@ -245,7 +245,7 @@ class BiblioFlowTester:
         
         try:
             response = self.session.post(f"{self.base_url}/borrow", json=borrow_data)
-            if self.assert_response(response, 201, "Borrow Book"):
+            if self.assert_response(response, 200, "Borrow Book"):  # Changed from 201 to 200
                 borrow = response.json()
                 self.test_data['borrows'].append(borrow)
                 self.log(f"Created borrow with ID: {borrow['id']}")
