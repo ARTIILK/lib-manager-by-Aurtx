@@ -133,14 +133,16 @@ class FocusedTester:
         """Test POST /api/books still works"""
         self.log("Testing Books Creation...")
         
-        # Generate unique identifiers
-        unique_id = str(int(time.time() * 1000)) + str(random.randint(1000, 9999))
+        # Generate highly unique identifiers to avoid conflicts
+        import uuid
+        unique_id = str(uuid.uuid4())[:8]  # Use UUID for uniqueness
+        timestamp_ms = str(int(time.time() * 1000))
         
         # Test book creation with SBIN
         book_data = {
             "title": f"Test Book {unique_id}",
             "author": "Test Author",
-            "sbin": f"SB{unique_id}"
+            "sbin": f"SBIN{timestamp_ms}{unique_id}"
         }
         
         try:
