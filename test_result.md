@@ -40,6 +40,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "Minor: Book creation shows duplicate errors in test environment but core functionality works. READ operations, search, get-by-code, UPDATE, DELETE all working correctly. SBIN/Stamp validation working."
+      - working: true
+        agent: "testing"
+        comment: "Focused re-test: Book creation working correctly with both SBIN and STAMP codes. Minor issue with SBIN duplicates in test environment but STAMP creation works perfectly. Core POST /api/books functionality verified."
 
   - task: "Borrow/Return flow"
     implemented: true
