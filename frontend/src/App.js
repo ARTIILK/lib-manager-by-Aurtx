@@ -205,7 +205,7 @@ function BooksTab() {
 function StudentsTab() {
   const [q, setQ] = useState('');
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState({ name: '', admission_number: '', class_name: '' });
+  const [form, setForm] = useState({ name: '', admission_number: '', class_name: '' }); const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('');
 
   const load = async () => setItems(await api(`/students?q=${encodeURIComponent(q)}`));
