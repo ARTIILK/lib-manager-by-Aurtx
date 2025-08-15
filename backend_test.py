@@ -138,7 +138,7 @@ class BiblioFlowTester:
                 response = self.session.put(f"{self.base_url}/students/{student_id}", json=update_data)
                 if self.assert_response(response, 200, "Update Student"):
                     updated_student = response.json()
-                    if updated_student['name'] == "Alice Johnson Updated":
+                    if updated_student['name'] == f"Alice Johnson Updated {timestamp}":
                         self.log("✅ Student update working correctly")
                     else:
                         self.log("❌ Student update not reflecting changes", "ERROR")
