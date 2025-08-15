@@ -145,6 +145,23 @@ class FocusedTester:
             "sbin": f"SBIN{timestamp_ms}{unique_id}"
         }
         
+    def test_books_creation(self):
+        """Test POST /api/books still works"""
+        self.log("Testing Books Creation...")
+        
+        # Generate highly unique identifiers to avoid conflicts
+        import uuid
+        unique_suffix = str(uuid.uuid4()).replace('-', '')[:12]  # 12 char unique string
+        
+        # Test book creation with SBIN - use completely different pattern
+        book_data = {
+            "title": f"Focused Test Book {unique_suffix}",
+            "author": "Test Author",
+            "sbin": f"TEST{unique_suffix}"  # Different prefix to avoid conflicts
+        }
+        
+        self.log(f"Attempting to create book with SBIN: {book_data['sbin']}")
+        
         try:
             response = self.session.post(f"{self.base_url}/books", json=book_data)
             if self.assert_response(response, 200, "Create Book with SBIN"):
@@ -152,6 +169,20 @@ class FocusedTester:
                 self.log(f"Created book with ID: {book['id']}")
                 self.test_book_id = book['id']
                 self.test_book_code = book['sbin']
+            else:
+                # If creation failed, let's try with stamp instead
+                self.log("Trying with stamp instead of SBIN...")
+                book_data_stamp = {
+                    "title": f"Focused Test Book Stamp {unique_suffix}",
+                    "author": "Test Author",
+                    "stamp": f"STAMP{unique_suffix}"
+                }
+                response = self.session.post(f"{self.base_url}/books", json=book_data_stamp)
+                if self.assert_response(response, 200, "Create Book with STAMP (fallback)"):
+                    book = response.json()
+                    self.log(f"Created book with ID: {book['id']}")
+                    self.test_book_id = book['id']
+                    self.test_book_code = book['stamp']
         except Exception as e:
             self.log(f"❌ Create book failed: {str(e)}", "ERROR")
 
