@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+
+body { @apply bg-tealLight text-blueGray; }
+
+.btn { @apply px-3 py-2 rounded bg-blueGray text-white hover:bg-blueGrayHover transition; }
+.input { @apply border border-blueGray/30 rounded px-3 py-2 bg-white text-blueGray focus:outline-none focus:ring-2 focus:ring-blueGray/40; }
+.card { @apply bg-white rounded shadow p-4; }
