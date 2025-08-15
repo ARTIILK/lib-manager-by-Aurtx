@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './index.css';
 
-const API_BASE = (typeof window !== 'undefined' && window.REACT_APP_BACKEND_URL) || (import.meta && import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) || (typeof process !== 'undefined' && process.env && process.env.REACT_APP_BACKEND_URL) || '';
+const API_BASE = (process && process.env && process.env.REACT_APP_BACKEND_URL) || '';
 
 async function api(path, opts) {
   const res = await fetch(`${API_BASE}${path}`, {
