@@ -239,6 +239,27 @@ class BiblioFlowTester:
         """Test Borrow and Return operations"""
         self.log("Testing Borrow/Return Flow...")
         
+        # If we don't have test data, try to get existing data from the API
+        if not self.test_data['students']:
+            try:
+                response = self.session.get(f"{self.base_url}/students")
+                if response.status_code == 200:
+                    students = response.json()
+                    if students:
+                        self.test_data['students'] = students[:1]  # Take first student
+            except Exception as e:
+                self.log(f"Failed to get existing students: {str(e)}", "ERROR")
+        
+        if not self.test_data['books']:
+            try:
+                response = self.session.get(f"{self.base_url}/books")
+                if response.status_code == 200:
+                    books = response.json()
+                    if books:
+                        self.test_data['books'] = books[:1]  # Take first book
+            except Exception as e:
+                self.log(f"Failed to get existing books: {str(e)}", "ERROR")
+        
         if not self.test_data['students'] or not self.test_data['books']:
             self.log("❌ Cannot test borrow/return - missing students or books", "ERROR")
             return
@@ -246,6 +267,8 @@ class BiblioFlowTester:
         student = self.test_data['students'][0]
         book = self.test_data['books'][0]
         book_code = book.get('sbin') or book.get('stamp')
+
+        self.log(f"Testing borrow with student {student['id']} and book code {book_code}")
 
         # Test BORROW
         borrow_data = {
