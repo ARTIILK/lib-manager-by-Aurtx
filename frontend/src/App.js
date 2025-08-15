@@ -300,7 +300,14 @@ function StudentsTab() {
 
 function BorrowsTab() {
   const [items, setItems] = useState([]);
-  const load = async () => setItems(await api('/borrows?active=true'));
+  const load = async () => {
+    try {
+      const result = await api('/borrows?active=true');
+      setItems(result || []);
+    } catch (e) {
+      setItems([]);
+    }
+  };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
   return (
     <Section title="Active Borrows">
