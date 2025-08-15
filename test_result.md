@@ -86,27 +86,33 @@ backend:
 frontend:
   - task: "Frontend validation (admission number + name)"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "dev"
         comment: "Inline validation added with clear error messages."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: Frontend completely broken with red error screen. JavaScript runtime errors: 'Cannot read properties of null (reading 'map')' in BorrowTab component. API calls failing with net::ERR_NAME_NOT_RESOLVED for 'http://api/'. REACT_APP_BACKEND_URL='/api' causing incorrect URL construction."
 
   - task: "Error message handling (detail/error/message)"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "medium"
     needs_retesting: false
     status_history:
       - working: true
         agent: "dev"
         comment: "Frontend now displays backend error messages from both FastAPI and Flask variants."
+      - working: false
+        agent: "testing"
+        comment: "Cannot test error message handling due to critical frontend runtime errors preventing application from loading properly."
 
 metadata:
   created_by: "dev"
