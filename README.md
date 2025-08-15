@@ -36,7 +36,7 @@ Python 3.x installed (no external dependencies required).
 Installation
 
 Clone the repository:
-bashgit clone https://github.com/ARTIILK/Aurtx_BiblioFlow.git
+bashgit clone https://github.com/ARTIILK/lib-manager-by-Aurtx.git
 
 Navigate to the project directory:
 bashcd Aurtx_BiblioFlow
