@@ -126,3 +126,5 @@ test_plan:
 agent_communication:
   - agent: "dev"
     message: "Proceeding to run frontend automation as user approved."
+  - agent: "testing"
+    message: "CRITICAL: Frontend E2E testing failed completely. Application shows red error screen with JavaScript runtime errors. API calls failing with 'net::ERR_NAME_NOT_RESOLVED' for 'http://api/'. The REACT_APP_BACKEND_URL='/api' configuration is causing incorrect URL construction in API calls. Frontend is completely broken and unusable."
