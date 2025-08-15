@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from backend.db import MongoRepo, SQLiteRepo, AbstractRepo
+from db import MongoRepo, SQLiteRepo, AbstractRepo
 
 # FastAPI app
 app = FastAPI(title="BiblioFlow Web API", openapi_url="/api/openapi.json", docs_url="/api/docs")
