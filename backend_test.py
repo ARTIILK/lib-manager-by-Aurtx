@@ -150,10 +150,12 @@ class BiblioFlowTester:
         self.log("Testing Books CRUD...")
         
         # Test CREATE book with SBIN
+        import time
+        timestamp = str(int(time.time()))
         book_data = {
-            "title": "Python Programming Fundamentals",
+            "title": f"Python Programming Fundamentals {timestamp}",
             "author": "John Smith",
-            "sbin": "SBIN123456"
+            "sbin": f"SBIN{timestamp}"
         }
         
         try:
