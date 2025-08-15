@@ -10,6 +10,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "Health endpoint working correctly - returns {ok: true} with 200 status"
+      - working: true
+        agent: "testing"
+        comment: "Focused re-test: Health endpoint returns {ok: true, service: 'biblioflow', db: 'MongoRepo'} - repository abstraction working correctly with MongoRepo detected"
 
   - task: "Students CRUD operations"
     implemented: true
