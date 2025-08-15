@@ -257,7 +257,8 @@ function StudentsTab() {
           <div className="space-y-2">
             <input className="input w-full" placeholder="Name" value={form.name} onChange={e => setForm(v => ({...v, name: e.target.value}))} />
             {errors.name && <div className="text-sm text-red-600">{errors.name}</div>}
-            <input className="input w-full" placeholder="Admission Number" value={form.admission_number} onChange={e => setForm(v => ({...v, admission_number: e.target.value}))} />
+            <input className="input w-full" placeholder="Admission Number (6 chars)" value={form.admission_number} onChange={e => setForm(v => ({...v, admission_number: e.target.value}))} />
+            {errors.admission_number && <div className="text-sm text-red-600">{errors.admission_number}</div>}
             <input className="input w-full" placeholder="Class" value={form.class_name} onChange={e => setForm(v => ({...v, class_name: e.target.value}))} />
             <button className="btn" onClick={create}>Add Student</button>
             <div className="text-sm">{status}</div>
