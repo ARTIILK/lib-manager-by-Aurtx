@@ -151,11 +151,11 @@ class BiblioFlowTester:
         
         # Test CREATE book with SBIN
         import time
-        timestamp = str(int(time.time()))
+        timestamp1 = str(int(time.time() * 1000))  # Use milliseconds for more uniqueness
         book_data = {
-            "title": f"Python Programming Fundamentals {timestamp}",
+            "title": f"Python Programming Fundamentals {timestamp1}",
             "author": "John Smith",
-            "sbin": f"SBIN{timestamp}"
+            "sbin": f"SBIN{timestamp1}"
         }
         
         try:
@@ -168,10 +168,12 @@ class BiblioFlowTester:
             self.log(f"❌ Create book failed: {str(e)}", "ERROR")
 
         # Test CREATE book with Stamp
+        time.sleep(0.1)  # Small delay to ensure different timestamp
+        timestamp2 = str(int(time.time() * 1000))
         book_data2 = {
-            "title": f"Advanced Mathematics {timestamp}",
+            "title": f"Advanced Mathematics {timestamp2}",
             "author": "Jane Doe",
-            "stamp": f"STAMP{timestamp}"
+            "stamp": f"STAMP{timestamp2}"
         }
         
         try:
