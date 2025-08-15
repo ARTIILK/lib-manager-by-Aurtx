@@ -152,13 +152,14 @@ class BiblioFlowTester:
         # Test CREATE book with SBIN
         import time
         import random
-        unique_id = str(int(time.time() * 1000)) + str(random.randint(1000, 9999))
+        unique_id = str(int(time.time() * 1000)) + str(random.randint(10000, 99999))
         book_data = {
             "title": f"Python Programming Fundamentals {unique_id}",
             "author": "John Smith",
             "sbin": f"SBIN{unique_id}"
         }
         
+        self.log(f"Attempting to create book with SBIN: {book_data['sbin']}")
         try:
             response = self.session.post(f"{self.base_url}/books", json=book_data)
             if self.assert_response(response, 200, "Create Book with SBIN"):  # Changed from 201 to 200
@@ -169,12 +170,15 @@ class BiblioFlowTester:
             self.log(f"❌ Create book failed: {str(e)}", "ERROR")
 
         # Test CREATE book with Stamp
-        unique_id2 = str(int(time.time() * 1000)) + str(random.randint(1000, 9999))
+        time.sleep(0.01)  # Small delay
+        unique_id2 = str(int(time.time() * 1000)) + str(random.randint(10000, 99999))
         book_data2 = {
             "title": f"Advanced Mathematics {unique_id2}",
             "author": "Jane Doe",
             "stamp": f"STAMP{unique_id2}"
         }
+        
+        self.log(f"Attempting to create book with STAMP: {book_data2['stamp']}")
         
         try:
             response = self.session.post(f"{self.base_url}/books", json=book_data2)
