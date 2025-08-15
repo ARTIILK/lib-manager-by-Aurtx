@@ -1,14 +1,14 @@
 import os
-import asyncio
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Query, Body
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import DuplicateKeyError
+from pymongo import ReturnDocument
 
 # FastAPI app
 app = FastAPI(title="BiblioFlow Web API", openapi_url="/api/openapi.json", docs_url="/api/docs")
@@ -35,7 +35,6 @@ except Exception:
 
 if db is None:
     # Fallback to a default database name if not supplied in URL
-    # NOTE: It's recommended to include the DB name in MONGO_URL
     db = client["biblioflow"]
 
 students_col = db["students"]
@@ -119,7 +118,6 @@ async def on_startup():
     await students_col.create_index("id", unique=True)
     await students_col.create_index("admission_number", unique=True)
     await books_col.create_index("id", unique=True)
-    # Unique sparse indexes for either code
     await books_col.create_index("sbin", unique=True, sparse=True)
     await books_col.create_index("stamp", unique=True, sparse=True)
     await borrows_col.create_index("id", unique=True)
@@ -180,7 +178,7 @@ async def update_student(student_id: str, payload: StudentIn):
         res = await students_col.find_one_and_update(
             {"id": student_id},
             {"$set": update},
-            return_document=True,
+            return_document=ReturnDocument.AFTER,
         )
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="Admission number already exists")
@@ -191,7 +189,6 @@ async def update_student(student_id: str, payload: StudentIn):
 
 @app.delete("/api/students/{student_id}")
 async def delete_student(student_id: str):
-    # Prevent deletion if student has active borrow
     active = await borrows_col.find_one({"student_id": student_id, "returned": False})
     if active:
         raise HTTPException(status_code=400, detail="Student has active borrow")
@@ -257,7 +254,7 @@ async def update_book(book_id: str, payload: BookIn):
     update = {k: v for k, v in payload.model_dump().items() if v is not None}
     try:
         res = await books_col.find_one_and_update(
-            {"id": book_id}, {"$set": update}, return_document=True
+            {"id": book_id}, {"$set": update}, return_document=ReturnDocument.AFTER
         )
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="Duplicate SBIN or Stamp code")
@@ -286,7 +283,14 @@ async def borrow_book(payload: BorrowCreate):
     book = await books_col.find_one({"$or": [{"sbin": payload.book_code}, {"stamp": payload.book_code}]})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
-    if not book.get("available", True):
+
+    # Atomically mark book unavailable if it is currently available
+    updated = await books_col.find_one_and_update(
+        {"id": book["id"], "available": True},
+        {"$set": {"available": False}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if not updated or updated.get("available") is True:
         raise HTTPException(status_code=400, detail="Book is not available")
 
     borrow_date = datetime.now(timezone.utc)
@@ -300,12 +304,7 @@ async def borrow_book(payload: BorrowCreate):
         "returned": False,
     }
 
-    # Perform atomically: set book unavailable and insert borrow
-    async with await client.start_session() as s:
-        async with s.start_transaction():
-            await books_col.update_one({"id": book["id"], "available": True}, {"$set": {"available": False}})
-            await borrows_col.insert_one(borrow_doc)
-
+    await borrows_col.insert_one(borrow_doc)
     return to_borrow(borrow_doc)
 
 
@@ -324,8 +323,10 @@ async def return_book(payload: ReturnCreate):
     returned_borrow = await borrows_col.find_one_and_update(
         {"id": borrow["id"]},
         {"$set": {"returned": True, "return_date": return_date}},
-        return_document=True,
+        return_document=ReturnDocument.AFTER,
     )
+
+    # Mark book available again
     await books_col.update_one({"id": book["id"]}, {"$set": {"available": True}})
 
     # Update warnings if late
@@ -337,8 +338,7 @@ async def return_book(payload: ReturnCreate):
     if days > 7:
         await students_col.update_one({"id": borrow["student_id"]}, {"$inc": {"warnings": 1}})
 
-    # Merge due_date if exists
-    if "due_date" not in returned_borrow:
+    if returned_borrow and "due_date" not in returned_borrow:
         returned_borrow["due_date"] = (borrow_dt + timedelta(days=7)).isoformat()
 
     return to_borrow(returned_borrow)
@@ -362,7 +362,7 @@ async def list_borrows(active: bool = True, limit: int = 50, skip: int = 0):
 
 # Suggestions
 @app.get("/api/suggest/students", response_model=List[StudentOut])
-async def suggest_students(q: str = Query("", min_length=0)): 
+async def suggest_students(q: str = Query("", min_length=0)):
     query: Dict[str, Any] = {}
     if q:
         query = {
