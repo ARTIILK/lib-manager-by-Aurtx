@@ -169,9 +169,9 @@ class BiblioFlowTester:
 
         # Test CREATE book with Stamp
         book_data2 = {
-            "title": "Advanced Mathematics",
+            "title": f"Advanced Mathematics {timestamp}",
             "author": "Jane Doe",
-            "stamp": "STAMP789"
+            "stamp": f"STAMP{timestamp}"
         }
         
         try:
