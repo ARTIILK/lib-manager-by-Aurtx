@@ -130,8 +130,8 @@ class BiblioFlowTester:
         if self.test_data['students']:
             student_id = self.test_data['students'][0]['id']
             update_data = {
-                "name": "Alice Johnson Updated",
-                "admission_number": "STU2024001",
+                "name": f"Alice Johnson Updated {timestamp}",
+                "admission_number": f"STU2024{timestamp}",
                 "class_name": "Grade 11A"
             }
             try:
