@@ -25,6 +25,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "All student CRUD operations working: CREATE (200), READ with search, UPDATE, DELETE. Duplicate admission number validation working correctly."
+      - working: true
+        agent: "testing"
+        comment: "Focused re-test: Admission number length validation working perfectly - rejects 5 chars (422), rejects 7 chars (422), accepts exactly 6 chars (200). Pydantic validation enforcing exactly 6 character requirement correctly."
 
   - task: "Books CRUD operations"
     implemented: true
