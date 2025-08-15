@@ -64,8 +64,12 @@ function BorrowTab() {
 
   useEffect(() => {
     const t = setTimeout(async () => {
-      const s = await api(`/suggest/students?q=${encodeURIComponent(studentQ)}`);
-      setStudents(s);
+      try {
+        const s = await api(`/suggest/students?q=${encodeURIComponent(studentQ)}`);
+        setStudents(s || []);
+      } catch (e) {
+        setStudents([]);
+      }
     }, 250);
     return () => clearTimeout(t);
   }, [studentQ]);
